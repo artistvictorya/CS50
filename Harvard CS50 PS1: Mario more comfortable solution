@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <cs50.h>
+
+int main(void)
+{
+    int height;
+    do
+    {
+        height = get_int("Height: ");
+    }
+    while (height < 1 || height > 8);
+
+    for (int row = 0; row < height; row++)
+    {
+        for (int leftSpaces = 0; leftSpaces < height - (row + 1); leftSpaces++)
+        {
+            printf(" ");
+        }
+
+        for (int leftHashes = 0; leftHashes < row + 1; leftHashes++)
+        {
+            printf("#");
+        }
+        printf(" ");
+
+        for (int rightHashes = 0; rightHashes < row + 1; rightHashes++)
+        {
+            printf("#");
+        }
+
+        for (int rightSpaces = 0; rightSpaces < height - (row + 1); rightSpaces++)
+        {
+            printf(" ");
+        }
+        printf("\n");
+    }
+}
