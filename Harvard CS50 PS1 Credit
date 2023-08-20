@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <cs50.h>
+
+int main(void)
+{
+    //get card number
+    long n = get_long("Number: ");
+
+    //count how many numbers are in credit card
+    int length = 0;
+    long c = n;
+    while (c > 0)
+    {
+        c = c / 10;
+        length++;
+    }
+
+    //check is that number a credit card number
+    if (length != 13 && length != 15 && length != 16)
+    {
+        printf("INVALID\n");
+        return 0;
+    }
+    // Calculate sum
+    int sum1 = 0;
+    int sum2 = 0;
+    long x = n;
+    int total = 0;
+    int d1;
+    int d2;
+    int mod1;
+    int mod2;
+
+    // Remove last digit
+    do
+    {
+    mod1 = x % 10;
+
+    x = x / 10;
+
+    // Remove the second last digit
+
+    mod2 = x % 10;
+
+    x = x / 10;
+
+    // 2 times second last digit and add digits to sum2
+
+    mod2 = mod2 * 2;
+    d1 = mod2 % 10;
+    d2 = mod2 / 10;
+    sum2 = sum2 + d1 + d2;
+}
+
+    while (x > 0);
+    total = sum1 + sum2;
+
+    // Get starting digits
+    long start = n;
+    do
+    {
+        start = start / 10;
+    }
+    while (start > 100);
+
+    //check Luhn’s Algorithm
+    if (total%10 != 0)
+    {
+        printf("INVALID\n");
+        return 0;
+    }
+    // American Express uses 15-digit numbers, American Express numbers start with 34 or 37
+    if ((start == 34 || start == 37) && length == 15)
+    {
+        printf("AMEX\n");
+        return 0;
+    }
+    //MasterCard numbers start with 51, 52, 53, 54, or 55, MasterCard uses 16-digit numbers
+    else if ((start >= 51 && start <= 55) && length == 16)
+    {
+        printf("MASTERCARD\n");
+        return 0;
+    }
+    // Visa numbers start with 4, Visa uses 13- and 16-digit numbers
+    else if (start == 4 &&(i = 13 || length == 16))
+    {
+        printf("VISA\n");
+        return 0;
+    }
+    else
+    {
+        printf("INVALID\n");
+        return 0;
+    }
+    return 1;
+}
