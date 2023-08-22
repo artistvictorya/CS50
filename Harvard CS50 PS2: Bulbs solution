@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <ctype.h>
+#include <string.h>
+
+const int bits_in_byte = 8;
+
+void print_bulb(int bit);
+
+int main(void)
+{
+    //Ask user for a massage
+    string message = get_string("Massage: ");
+
+    int lenght = strlen(message);
+
+    for (int i = 0; i < lenght; i++)
+    {
+        int binary[] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+        int decimal = message[i];
+
+        int j = 0;
+
+        while (decimal > 0)
+        {
+            binary[j] = decimal % 2;
+            decimal = decimal / 2;
+            j++;
+        }
+
+        for (int k = bits_in_byte - 1; k >= 0; k--)
+        {
+            print_bulb(binary[k]);
+        }
+        printf("\n");
+    }
+}
+
+void print_bulb(int bit)
+{
+    if (bit == 0)
+    {
+        printf("\U000026AB");
+    }
+    else
+    {
+        printf("\U0001F7E1");
+    }
+}
