@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+string get_ciphertext(int strlen, string plaintext, int key);
+
+int main(int argc, string argv[])
+{
+    if (argc != 2)
+    {
+        printf("Unproper usage of command line arguments \n");
+        return 1;
+    }
+
+    //Check that user type int into coomand line arg
+    int inputLength = strlen(argv[1]);
+    for (int i = 0; i < inputLength; i++)
+    {
+        if (isdigit(argv[1][i]) == 0)
+        {
+            printf("You didn't type an int in command line argument: ./caesar key \n");
+            return 1;
+        }
+    }
+    int key = atoi(argv[1]);
+
+    //We don't need to check if plaintext is a string or not because we use cs50 library and ask for string. So library do all of mess stuff for us 
+    string plaintext = get_string("Plaintext: ");
+    int length = strlen(plaintext);
+
+    string ciphertext = get_ciphertext(length, plaintext, key);
+    printf("Ciphertext: %s \n", ciphertext);
+}
+
+string get_ciphertext(int strlen, string plaintext, int key)
+{
+    string ciphertext = plaintext;
+    for (int i = 0; i < strlen; i++)
+    {
+        if (isupper(plaintext[i]))
+        {
+            ciphertext[i] = (plaintext[i] - 'A' + key) % 26 + 'A';
+        }
+        else
+        {
+            ciphertext[i] = (plaintext[i] - 'a' + key) % 26 + 'a';
+        }
+    }
+    return ciphertext;
+}
