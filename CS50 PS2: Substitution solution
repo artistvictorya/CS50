@@ -1,0 +1,76 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+const int alphabetLenght = 26;
+string get_ciphertext(string plaintext, int strlen, string key);
+
+int main(int argc, string argv[])
+{
+    //checking if the user gave 2 arguments or not
+    if (argc != 2)
+    {
+        printf("Usage: ./substitution key\n");
+        return 1;
+    }
+    //26 character or not
+    int keylen = strlen(argv[1]);
+    if (keylen != alphabetLenght)
+    {
+        printf("key must contain 26 characters.\n");
+        return 1;
+    }
+    //checking if it's all alphabet or not
+    for (int i = 0; i < alphabetLenght; i++)
+    {
+        if (isalpha(argv[1][i]) == 0)
+        {
+            printf("Unproppriate key\n");
+            return 1;
+        }
+    }
+
+    //checking for repeated items inside the key 2 or more of the same letter
+    for (int j = 0; j < alphabetLenght; j++)
+    {
+        for (int k = j + 1; argv[1][k] != '\0'; k++)
+        {
+            if (argv[1][j] == argv[1][k])
+            {
+                printf("Key include matches \n");
+                return 1;
+            }
+        }
+    }
+
+    string plaintext = get_string("Plaintext: ");
+    int plainLenght = strlen(plaintext);
+    string ciphertext = get_ciphertext(plaintext, plainLenght, argv[1]);
+    printf("Cihertext: %s \n", ciphertext);
+}
+
+string get_ciphertext(string plaintext, int strlen, string key)
+{
+    // Create a pointer to a plaintext (we can use this thing even don't knowing about pointers theese week)
+    string ciphertext = plaintext;
+    for (int i = 0; i < strlen; i++)
+    {
+        // Check a case (as uppercase or lowercase) of a ith letter in plaintext
+        if (isupper(ciphertext[i]) != 0)
+        {
+            // Subtract for our value A for knowing it's number in alphabet ( A - 0, B - 1 and etc.)
+            int c = (ciphertext[i] - 'A');
+            // Change letter to uppercase letter in key in it's number in alphabet
+            ciphertext[i] = (toupper(key[c]));
+        }
+        else if (islower(ciphertext[i]) != 0)
+        {
+            // Same logic
+            int c = (ciphertext[i] - 'a');
+            ciphertext[i] = (toupper(key[c]));
+        }
+        // If it's special symbol we just don't do anything! So no else command
+    }
+    return ciphertext;
+}
