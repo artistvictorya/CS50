@@ -39,7 +39,7 @@ string get_ciphertext(int strlen, string plaintext, int key)
     string ciphertext = plaintext;
     for (int i = 0; i < strlen; i++)
     {
-        if (isupper(plaintext[i]))
+        if (isupper(plaintext[i]) )
         {
             ciphertext[i] = (plaintext[i] - 'A' + key) % 26 + 'A';
         }
