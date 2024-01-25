@@ -1,0 +1,103 @@
+//Viktoriia Volkova
+const int* minHelp(const int* t, int smallest, int N, const int* minAddress) {
+    if (N == 0) {
+        return minAddress;
+    }
+
+    if (*t < smallest) {
+        smallest = *t;
+        minAddress = t;
+    }
+    return minHelp(t + 1, smallest, N - 1, minAddress);
+}
+
+const int* minimum(int N, const int* t) {
+    if (N <= 0 || t == nullptr) {
+        return nullptr;
+    }
+
+    int smallest = *t;
+    const int* minAddress = t;
+
+    return minHelp(t + 1, smallest, N - 1, minAddress);
+}
+
+int iloczynSkalarny(const int* b1, const int* e1, const int* b2, const int* e2){
+    int len1 = e1 - b1;
+    int len2 = e2 - b2;
+
+    if(len1 != len2){
+        return -1;
+    }
+    else{
+        if(b1 != e1){
+            int wynik = (*b1) * (*b2) + iloczynSkalarny(b1+1, e1, b2+1, e2);
+            return wynik;
+        } else {
+            return 0;
+        }
+    }
+}
+
+void zastH(int (*f)(int), int *b, int *e) {
+    if (b != e) {
+        *b = f(*b);
+        zastH(f, ++b, e);
+    }
+}
+
+void zastosuj(int (*f)(int), int *b, int *e) {
+    zastH(f, b, e);
+}
+
+int filtruj(bool (*f)(int), const int *b, const int *e, int *t) {
+    if (b >= e) return 0;
+
+    int count = 0;
+    if (f(*b)) {
+        *t = *b;
+        ++count;
+        ++t;
+    }
+
+    return count + filtruj(f, b + 1, e, t);
+}
+
+void calculate(double& sum, unsigned int& count, bool (*f)(int), const int* b, const int* e) {
+    if (b != e) {
+        if (f(*b)) {
+            sum += 1.0 / *b;
+            ++count;
+        }
+        calculate(sum, count, f, b + 1, e);
+    }
+}
+
+unsigned int sredniaWarunkowaHarmoniczna(double& s, bool (*f)(int), const int* b, const int* e) {
+    double sum = 0;
+    unsigned int count = 0;
+
+    calculate(sum, count, f, b, e);
+
+    if (count > 0) {
+        s = count / sum;
+    }
+
+    return count;
+}
+
+long long dw[21][21] = {0};
+
+long long stirling(int N, int K) {
+    if (N < K) return 0;
+    if (N > 20 || K > 20) return -1;
+    if (N == 0 && K == 0) return 1;
+    if (N == 0 || K == 0) return 0;
+    if(dw[N][K]!=0)
+    {
+        return dw[N][K];
+    }
+    else{
+        dw[N][K] = (N - 1) * stirling(N - 1, K) + stirling(N - 1, K - 1);
+        return dw[N][K];
+    }
