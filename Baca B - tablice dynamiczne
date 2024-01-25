@@ -29,7 +29,7 @@ int** myrealloc(int size, int** array, int new_size){ //która jest analogiczna 
         delete array;
         return NULL;
     }
-    int** new_array = new int*[new_size];
+    int** new_array = new int*[new_size]; // tworzysz dynamicznie dwuwymiarową tablicę wskaźników na liczby całkowite. Oto wyjaśnienie krok po kroku:
     int min_size = size;
     if(min_size > new_size){
         min_size = new_size;
