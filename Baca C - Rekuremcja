@@ -39,82 +39,133 @@ const int* minimum(int N, const int* t) {
 }
 
 
-int iloczynSkalarny(const int* b1, const int* e1, const int* b2, const int* e2){
+// Funkcja iloczynSkalarny, która oblicza iloczyn skalarny dwóch zakresów.
+// b1 - wskaźnik do początku pierwszego zakresu
+// e1 - wskaźnik do końca pierwszego zakresu (jedno miejsce za ostatnim elementem)
+// b2 - wskaźnik do początku drugiego zakresu
+// e2 - wskaźnik do końca drugiego zakresu (jedno miejsce za ostatnim elementem)
+int iloczynSkalarny(const int* b1, const int* e1, const int* b2, const int* e2) {
+    // Oblicza długości zakresów.
     int len1 = e1 - b1;
     int len2 = e2 - b2;
 
-    if(len1 != len2){
+    // Sprawdza, czy długości zakresów są równe.
+    if (len1 != len2) {
+        // Jeśli nie, zwraca -1 jako sygnalizację błędu.
         return -1;
-    }
-    else{
-        if(b1 != e1){
-            int wynik = (*b1) * (*b2) + iloczynSkalarny(b1+1, e1, b2+1, e2);
+    } else {
+        // Jeśli długości są równe, przechodzi do obliczenia iloczynu skalarnego.
+        // Sprawdza, czy zakresy nie są puste (b1 != e1).
+        if (b1 != e1) {
+            // Oblicza iloczyn skalarny dla pierwszych elementów i rekurencyjnie dla reszty zakresów.
+            int wynik = (*b1) * (*b2) + iloczynSkalarny(b1 + 1, e1, b2 + 1, e2);
             return wynik;
         } else {
+            // Jeśli zakresy są puste, zwraca 0.
             return 0;
         }
     }
 }
 
+
+// Funkcja pomocnicza zastH, która przekształca każdy element zakresu przy użyciu funkcji f.
+// f - wskaźnik do funkcji o jednym argumencie typu int, zwracającej int
+// b - wskaźnik do początku zakresu
+// e - wskaźnik do końca zakresu (jedno miejsce za ostatnim elementem)
 void zastH(int (*f)(int), int *b, int *e) {
+    // Sprawdza, czy zakres nie jest pusty (b != e).
     if (b != e) {
+        // Przekształca aktualny element za pomocą funkcji f.
         *b = f(*b);
+
+        // Rekurencyjnie wywołuje funkcję dla reszty zakresu (b + 1, e).
         zastH(f, ++b, e);
     }
 }
 
 void zastosuj(int (*f)(int), int *b, int *e) {
+    // Wywołuje funkcję pomocniczą zastH, przekazując jej funkcję f oraz zakres (b, e).
     zastH(f, b, e);
 }
 
-int filtruj(bool (*f)(int), const int *b, const int *e, int *t) {
-    if (b >= e) return 0;
 
+int filtruj(bool (*f)(int), const int *b, const int *e, int *t) {
+    // Warunek sprawdzający, czy wskaźnik początkowy (b) jest większy lub równy wskaźnikowi końcowemu (e).
+    if (b >= e) 
+        // Jeśli tak, to zwraca 0, ponieważ zakres jest pusty.
+        return 0;
+
+    // Inicjalizacja zmiennej count, która przechowuje liczbę elementów, które spełniają warunek funkcji f.
     int count = 0;
+
+    // Sprawdza, czy aktualny element spełnia warunek funkcji f.
     if (f(*b)) {
+        // Jeśli tak, przypisuje wartość elementu do tablicy t.
         *t = *b;
+        // Zwiększa licznik i wskaźnik tablicy.
         ++count;
         ++t;
     }
 
+    // Rekurencyjnie wywołuje funkcję dla następnego elementu zakresu (b + 1).
+    // Akumuluje wynik do zmiennej count.
     return count + filtruj(f, b + 1, e, t);
 }
 
+
 void calculate(double& sum, unsigned int& count, bool (*f)(int), const int* b, const int* e) {
+    // Sprawdza, czy wskaźnik początkowy (b) nie jest równy wskaźnikowi końcowemu (e).
     if (b != e) {
+        // Sprawdza, czy aktualny element spełnia warunek funkcji f.
         if (f(*b)) {
+            // Dodaje odwrotność aktualnego elementu do sumy.
             sum += 1.0 / *b;
+            // Zwiększa licznik count.
             ++count;
         }
+
+        // Rekurencyjnie wywołuje funkcję dla następnego elementu zakresu (b + 1).
         calculate(sum, count, f, b + 1, e);
     }
 }
 
+
 unsigned int sredniaWarunkowaHarmoniczna(double& s, bool (*f)(int), const int* b, const int* e) {
+    // Inicjalizuje zmienne lokalne sum i count.
     double sum = 0;
     unsigned int count = 0;
 
+    // Wywołuje funkcję calculate, aby obliczyć sumę i liczbę elementów spełniających warunek.
     calculate(sum, count, f, b, e);
 
+    // Sprawdza, czy istnieją elementy spełniające warunek.
     if (count > 0) {
+        // Oblicza średnią harmoniczną i przypisuje do zmiennej s.
         s = count / sum;
     }
 
+    // Zwraca liczbę elementów spełniających warunek.
     return count;
 }
+
 
 long long dw[21][21] = {0};
 
 long long stirling(int N, int K) {
+    // Sprawdza warunki brzegowe, zwraca 0, jeśli N < K lub N > 20 lub K > 20.
     if (N < K) return 0;
     if (N > 20 || K > 20) return -1;
+
+    // Warunki brzegowe dla N = 0, K = 0 oraz N = 0 lub K = 0.
     if (N == 0 && K == 0) return 1;
     if (N == 0 || K == 0) return 0;
-    if(dw[N][K]!=0)
-    {
+
+    // Sprawdza, czy wynik dla danej pary (N, K) został już obliczony i zapisany w tablicy dw.
+    if (dw[N][K] != 0) {
         return dw[N][K];
-    }
-    else{
+    } else {
+        // Oblicza wartość liczby Stirlinga pierwszego rodzaju dla pary (N, K) i zapisuje wynik w tablicy dw.
         dw[N][K] = (N - 1) * stirling(N - 1, K) + stirling(N - 1, K - 1);
         return dw[N][K];
     }
+}
