@@ -1,0 +1,275 @@
+//Viktoriia Volkova
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+
+int N;
+int** matrix = NULL;
+int* size = NULL;
+
+int* myrealloc(int size, int* array, int new_size){
+    if(new_size == 0){
+        delete array;
+        return NULL;
+    }
+    int* new_array = new int[new_size];
+    int min_size = size;
+    if(min_size > new_size){
+        min_size = new_size;
+    }
+    for(int i = 0; i < min_size; i++){
+        new_array[i] = array[i];
+    }
+    delete array;
+    return new_array;
+}
+
+int** myrealloc(int size, int** array, int new_size){
+    if(new_size == 0){
+        delete array;
+        return NULL;
+    }
+    int** new_array = new int*[new_size];
+    int min_size = size;
+    if(min_size > new_size){
+        min_size = new_size;
+    }
+    for(int i = 0; i < min_size; i++){
+        new_array[i] = array[i];
+    }
+    delete array;
+    return new_array;
+}
+
+void deleteRow(int row_index){
+    delete matrix[row_index];
+    for(int i = row_index; i < N - 1; i++){
+        matrix[i] = matrix[i + 1];
+        size[i] = size[i + 1];
+    }
+    matrix = myrealloc(N, matrix, N - 1);
+    size = myrealloc(N, size, N - 1);
+    N--;
+}
+
+void deleteElement(int x, int y){
+    int m = size[x];
+    for(int i = y; i < m - 1; i++){
+        matrix[x][i] = matrix[x][i + 1];
+    }
+    matrix[x] = myrealloc(m, matrix[x], m - 1);
+    size[x]--;
+}
+
+void lined(int x, int y, int value)
+{
+    if(x < 0 || x >= N || y < 0 || y >= size[x] || matrix[x][y] != value)
+        return;
+    matrix[x][y] = -1;
+    lined(x, y + 1, value);
+    lined(x, y - 1, value);
+    lined(x + 1, y, value);
+    lined(x - 1, y, value);
+}
+void crossed(int x, int y, int value){
+    if(x < 0 || x >= N || y < 0 || y >= size[x] || matrix[x][y] != value)
+        return;
+    matrix[x][y] = -1;
+    crossed(x + 1, y + 1, value);
+    crossed(x + 1, y - 1, value);
+    crossed(x - 1, y + 1, value);
+    crossed(x - 1, y - 1, value);
+}
+
+void print(){
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < size[i]; j++){
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void makeZ()
+{
+    int n, m;
+    scanf("%d%d", &n, &m);
+    int* t;
+    t = matrix[n];
+    matrix[n] = matrix[m];
+    matrix[m] = t;
+    int tt;
+    tt = size[n];
+    size[n] = size[m];
+    size[m] = tt;
+}
+
+void makeU()
+{
+    int row_index;
+    scanf("%d", &row_index);
+    deleteRow(row_index);
+}
+
+void makeP()
+{
+    int n;
+    scanf("%d", &n);
+    matrix[n] = myrealloc(size[n], matrix[n], size[n] * 2);
+    size[n] *= 2;
+    int m = size[n];
+    for(int i = m / 2; i < m; i++) {
+        matrix[n][i] = matrix[n][m / 2 - 1 - (i - m / 2 )];
+    }
+}
+
+void makeM()
+{
+    int n, m, k;
+    scanf("%d%d%d", &n, &m, &k);
+    int* temp;
+    temp = matrix[n];
+    int new_size = size[n] + size[m];
+    matrix[n] = myrealloc(size[n],matrix[n],new_size);
+    for(int i = 0; i < k; i++)
+        matrix[n][i] = temp[i];
+    for(int i = k; i < k + size[m]; i++)
+        matrix[n][i] = matrix[m][i-k];
+    for(int i = k + size[m]; i < new_size; i++)
+        matrix[n][i] = temp[i - size[m]];
+    size[n] += size[m];
+    delete[] temp;
+    n = m;
+    deleteRow(n);
+}
+
+void makeC()
+{
+    int x, y;
+    scanf("%d%d", &x, &y);
+    lined(x, y, matrix[x][y]);
+    for(int i = 0; i < N; i++){
+        for(int j = size[i]; j >= 0; j--){
+            if(matrix[i][j] == -1)
+                deleteElement(i, j);
+        }
+        if(size[i] == 0){
+            deleteRow(i);
+            i--;
+        }
+    }
+}
+
+void makeX()
+{
+    int x, y;
+    scanf("%d%d", &x, &y);
+    crossed(x, y, matrix[x][y]);
+    for(int i = 0; i < N; i++){
+        for(int j = size[i] -1; j >= 0; j--){
+            if(matrix[i][j] == -1) {
+                deleteElement(i, j);
+            }
+        }
+        if(size[i] == 0){
+            deleteRow(i);
+            i--;
+        }
+    }
+}
+
+void makeR()
+{
+    int n, k;
+    scanf("%d%d", &n, &k);
+    int ** tempmatrix = new int*[N];
+    int * tempsize = new int[N];
+    for(int i = 0; i < N; i++){
+        tempsize[i] = size[i];
+        tempmatrix[i] = new int[size[i]];
+        tempmatrix[i] = matrix[i];
+    }
+    int a = 0, b = 0;
+    int * templ1 = new int[tempsize[n]];
+    int * templ2 = new int[tempsize[n]];
+    for(int i = 0; i < tempsize[n]; i++)
+    {
+        if(tempmatrix[n][i] > k){
+            templ1[a] = tempmatrix[n][i];
+            a++;
+        }
+        else{
+            templ2[b] = tempmatrix[n][i];
+            b++;
+        }
+    }
+    if(a != 0 && b != 0){
+        N++;
+        size = new int[N];
+        matrix = new int*[N];
+        for(int i = 0; i < n; i++){
+            size[i] = tempsize[i];
+            matrix[i] = tempmatrix[i];
+        }
+        matrix[n] = new int[a];
+        matrix[n + 1] = new int[b];
+        size[n] = a;
+        size[n + 1] = b;
+        matrix[n] = templ1;
+        matrix[n + 1] = templ2;
+        for(int i = n + 2; i < N; i++)
+        {
+            matrix[i] = tempmatrix[i - 1];
+            size[i] = tempsize[i - 1];
+        }
+    }
+}
+
+int main() {
+    scanf("%d", &N);
+    size = new int[N];
+    matrix = new int *[N];
+    for (int i = 0; i < N; i++) {
+        int m;
+        scanf("%d", &m);
+        size[i] = m;
+        matrix[i] = new int[m];
+        for (int j = 0; j < m; j++) {
+            int a;
+            scanf("%d", &a);
+            matrix[i][j] = a;
+        }
+    }
+    while (true) {
+        char c;
+        scanf("%c", &c);
+        if (c == 'W') {
+            print();
+        }
+        if (c == 'K')
+            break;
+        if (c == 'U') {
+            makeU();
+        }
+        if (c == 'Z') {
+            makeZ();
+        }
+        if (c == 'P') {
+            makeP();
+        }
+        if (c == 'M') {
+            makeM();
+        }
+        if (c == 'C') {
+            makeC();
+        }
+        if (c == 'X') {
+            makeX();
+        }
+        if (c == 'R') {
+            makeR();
+
+        }
+    }
+}
