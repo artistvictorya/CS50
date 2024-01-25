@@ -3,13 +3,13 @@
 #include <cstring>
 #include <cstdlib>
 
-int N;
-int** matrix = NULL;
-int* size = NULL;
+int N; // Deklaruje zmienną całkowitą N, która prawdopodobnie będzie używana do przechowywania liczby wierszy tablicy.
+int** matrix = NULL; // Deklaruje wskaźnik do wskaźnika na liczbę całkowitą, który prawdopodobnie będzie służył do przechowywania dwuwymiarowej tablicy liczb całkowitych (macierzy). Inicjalizuje go wartością NULL.
+int* size = NULL; //Deklaruje wskaźnik na liczbę całkowitą, który prawdopodobnie będzie używany do przechowywania informacji o liczbie elementów w każdym z wierszy tablicy. Inicjalizuje go wartością NULL.
 
 int* myrealloc(int size, int* array, int new_size){
     if(new_size == 0){
-        delete array;
+        delete array;   // Usuwa pamięć dynamicznie alokowaną dla tablicy wskazywanej przez array.
         return NULL;
     }
     int* new_array = new int[new_size];
@@ -21,10 +21,10 @@ int* myrealloc(int size, int* array, int new_size){
         new_array[i] = array[i];
     }
     delete array;
-    return new_array;
+    return new_array; // Funkcja zwraca wskaźnik do nowej tablicy liczb całkowitych.
 }
 
-int** myrealloc(int size, int** array, int new_size){
+int** myrealloc(int size, int** array, int new_size){ //która jest analogiczna do poprzedniej, ale tym razem przyjmuje wskaźnik do wskaźnika na liczbę całkowitą (int**) jako drugi argument. Funkcja zwraca wskaźnik do nowej tablicy wskaźników na liczby całkowite.
     if(new_size == 0){
         delete array;
         return NULL;
@@ -42,157 +42,208 @@ int** myrealloc(int size, int** array, int new_size){
 }
 
 void deleteRow(int row_index){
-    delete matrix[row_index];
+    delete matrix[row_index]; // Usuwa pamięć dynamicznie alokowaną dla wiersza o indeksie row_index.
     for(int i = row_index; i < N - 1; i++){
-        matrix[i] = matrix[i + 1];
-        size[i] = size[i + 1];
+        matrix[i] = matrix[i + 1]; // Przesuwa zawartość wierszy w górę o jeden indeks, aby zapełnić lukę.
+        size[i] = size[i + 1];     // Przesuwa informacje o rozmiarze wierszy w górę o jeden indeks.
     }
-    matrix = myrealloc(N, matrix, N - 1);
-    size = myrealloc(N, size, N - 1);
-    N--;
+    matrix = myrealloc(N, matrix, N - 1); // Zmniejsza rozmiar dynamicznie alokowanej tablicy wskaźników na wiersze.
+    size = myrealloc(N, size, N - 1);     // Zmniejsza rozmiar dynamicznie alokowanej tablicy informacji o rozmiarach wierszy.
+    N--; // Aktualizuje liczbę wierszy w tablicy.
 }
 
 void deleteElement(int x, int y){
-    int m = size[x];
+    int m = size[x]; // Pobiera aktualny rozmiar wiersza x.
     for(int i = y; i < m - 1; i++){
-        matrix[x][i] = matrix[x][i + 1];
+        matrix[x][i] = matrix[x][i + 1]; // Przesuwa elementy wiersza x o jedną pozycję do przodu od kolumny y.
     }
-    matrix[x] = myrealloc(m, matrix[x], m - 1);
-    size[x]--;
+    matrix[x] = myrealloc(m, matrix[x], m - 1); // Zmniejsza rozmiar dynamicznie alokowanej tablicy dla wiersza x o jeden element.
+    size[x]--; // Aktualizuje informację o nowym rozmiarze wiersza x.
 }
 
 void lined(int x, int y, int value)
 {
+    // Sprawdza warunki graniczne oraz czy wartość w macierzy na pozycji (x, y) jest równa oczekiwanej wartości.
     if(x < 0 || x >= N || y < 0 || y >= size[x] || matrix[x][y] != value)
-        return;
+        return; // Jeśli warunek nie jest spełniony, funkcja kończy się.
+
+    // Zaznacza aktualny element jako odwiedzony, zamieniając go na -1.
     matrix[x][y] = -1;
+
+    // Wywołuje funkcję dla sąsiednich elementów w pionie i poziomie, o ile spełnione są warunki.
     lined(x, y + 1, value);
     lined(x, y - 1, value);
     lined(x + 1, y, value);
     lined(x - 1, y, value);
 }
-void crossed(int x, int y, int value){
+
+void crossed(int x, int y, int value)
+{
+    // Sprawdza warunki graniczne oraz czy wartość w macierzy na pozycji (x, y) jest równa oczekiwanej wartości.
     if(x < 0 || x >= N || y < 0 || y >= size[x] || matrix[x][y] != value)
-        return;
+        return; // Jeśli warunek nie jest spełniony, funkcja kończy się.
+
+    // Zaznacza aktualny element jako odwiedzony, zamieniając go na -1.
     matrix[x][y] = -1;
+
+    // Wywołuje funkcję dla przekątnych elementów, o ile spełnione są warunki.
     crossed(x + 1, y + 1, value);
     crossed(x + 1, y - 1, value);
     crossed(x - 1, y + 1, value);
     crossed(x - 1, y - 1, value);
 }
 
+
 void print(){
     for(int i = 0; i < N; i++){
         for(int j = 0; j < size[i]; j++){
-            printf("%d ", matrix[i][j]);
+            printf("%d ", matrix[i][j]); // Wypisuje wartość elementu macierzy na standardowe wyjście, z separatorem w postaci spacji.
         }
-        printf("\n");
+        printf("\n"); // Przechodzi do nowej linii po zakończeniu wypisywania wiersza.
     }
-    printf("\n");
+    printf("\n"); // Dodaje dodatkową pustą linię po zakończeniu wypisywania całej macierzy.
 }
 
-void makeZ()
+
+void makeZ() //zamiana miejscami wierszy o numerach n i m
 {
     int n, m;
-    scanf("%d%d", &n, &m);
-    int* t;
-    t = matrix[n];
-    matrix[n] = matrix[m];
-    matrix[m] = t;
-    int tt;
-    tt = size[n];
-    size[n] = size[m];
-    size[m] = tt;
+    scanf("%d%d", &n, &m); // Wczytuje wartości indeksów n i m ze standardowego wejścia.
+
+    int* t; // Deklaruje wskaźnik t do int.
+    t = matrix[n]; // Przypisuje wskaźnikowi t adres wiersza o indeksie n.
+
+    matrix[n] = matrix[m]; // Zamienia miejscami wiersze o indeksach n i m.
+    matrix[m] = t; // Przywraca oryginalny wiersz o indeksie n do miejsca wiersza o indeksie m.
+
+    int tt; // Deklaruje zmienną tt typu int.
+    tt = size[n]; // Przypisuje tt rozmiar wiersza o indeksie n.
+
+    size[n] = size[m]; // Zamienia miejscami rozmiary wierszy o indeksach n i m.
+    size[m] = tt; // Przywraca oryginalny rozmiar wiersza o indeksie n do miejsca rozmiaru wiersza o indeksie m.
 }
+
 
 void makeU()
 {
     int row_index;
-    scanf("%d", &row_index);
-    deleteRow(row_index);
+    scanf("%d", &row_index); // Wczytuje indeks wiersza do usunięcia ze standardowego wejścia.
+
+    deleteRow(row_index); // Wywołuje funkcję deleteRow, która usuwa wiersz o podanym indeksie z macierzy.
 }
+
 
 void makeP()
 {
     int n;
-    scanf("%d", &n);
+    scanf("%d", &n); // Wczytuje indeks wiersza do przekształcenia ze standardowego wejścia.
+
+    // Zmienia rozmiar wiersza na dwa razy większy.
     matrix[n] = myrealloc(size[n], matrix[n], size[n] * 2);
+
+    // Aktualizuje rozmiar wiersza.
     size[n] *= 2;
-    int m = size[n];
+
+    int m = size[n]; // Zapisuje nowy rozmiar wiersza w zmiennej pomocniczej m.
+
+    // Wypełnia drugą połowę wiersza odwróconymi wartościami z pierwszej połowy.
     for(int i = m / 2; i < m; i++) {
         matrix[n][i] = matrix[n][m / 2 - 1 - (i - m / 2 )];
     }
 }
 
+
 void makeM()
 {
     int n, m, k;
-    scanf("%d%d%d", &n, &m, &k);
-    int* temp;
-    temp = matrix[n];
+    scanf("%d%d%d", &n, &m, &k); // Wczytuje indeksy i pozycję z wejścia.
+
+    int* temp; // Deklaruje wskaźnik temp do int.
+    temp = matrix[n]; // Przypisuje wskaźnikowi temp adres wiersza o indeksie n.
+
+    // Zmienia rozmiar wiersza o indeksie n na sumę rozmiarów wierszy n i m.
     int new_size = size[n] + size[m];
-    matrix[n] = myrealloc(size[n],matrix[n],new_size);
+    matrix[n] = myrealloc(size[n], matrix[n], new_size);
+
+    // Kopiuje pierwsze k elementów z temp do wiersza o indeksie n.
     for(int i = 0; i < k; i++)
         matrix[n][i] = temp[i];
+
+    // Kopiuje elementy z wiersza m (zaczynając od pozycji k) do wiersza n.
     for(int i = k; i < k + size[m]; i++)
-        matrix[n][i] = matrix[m][i-k];
+        matrix[n][i] = matrix[m][i - k];
+
+    // Kopiuje pozostałe elementy z temp do wiersza n.
     for(int i = k + size[m]; i < new_size; i++)
         matrix[n][i] = temp[i - size[m]];
-    size[n] += size[m];
-    delete[] temp;
-    n = m;
-    deleteRow(n);
+
+    size[n] += size[m]; // Aktualizuje rozmiar wiersza o indeksie n.
+
+    delete[] temp; // Zwolnienie pamięci zaalokowanej dla temp.
 }
 
 void makeC()
 {
     int x, y;
-    scanf("%d%d", &x, &y);
-    lined(x, y, matrix[x][y]);
+    scanf("%d%d", &x, &y); // Wczytuje pozycję (x, y) z wejścia.
+
+    lined(x, y, matrix[x][y]); // Wywołuje funkcję lined w celu oznaczenia elementów bloku.
+
     for(int i = 0; i < N; i++){
         for(int j = size[i]; j >= 0; j--){
             if(matrix[i][j] == -1)
-                deleteElement(i, j);
+                deleteElement(i, j); // Usuwa elementy oznaczone jako -1.
         }
         if(size[i] == 0){
-            deleteRow(i);
+            deleteRow(i); // Usuwa wiersz, jeśli jest pusty.
             i--;
         }
     }
 }
+
 
 void makeX()
 {
     int x, y;
-    scanf("%d%d", &x, &y);
-    crossed(x, y, matrix[x][y]);
+    scanf("%d%d", &x, &y); // Wczytuje pozycję (x, y) z wejścia.
+
+    crossed(x, y, matrix[x][y]); // Wywołuje funkcję crossed w celu oznaczenia elementów bloku.
+
     for(int i = 0; i < N; i++){
-        for(int j = size[i] -1; j >= 0; j--){
+        for(int j = size[i] - 1; j >= 0; j--){
             if(matrix[i][j] == -1) {
-                deleteElement(i, j);
+                deleteElement(i, j); // Usuwa elementy oznaczone jako -1.
             }
         }
         if(size[i] == 0){
-            deleteRow(i);
+            deleteRow(i); // Usuwa wiersz, jeśli jest pusty.
             i--;
         }
     }
 }
 
-void makeR()
+
+void makeR() //rozbicie wiersza o numerze n na wiersze zawierające liczby większe i nie większe niż k
 {
     int n, k;
-    scanf("%d%d", &n, &k);
+    scanf("%d%d", &n, &k); // Wczytuje indeks wiersza i wartość k z wejścia.
+
+    // Tworzy tymczasową macierz i rozmiar.
     int ** tempmatrix = new int*[N];
     int * tempsize = new int[N];
+
+    // Kopiuje oryginalną macierz i rozmiar do tempmatrix i tempsize.
     for(int i = 0; i < N; i++){
         tempsize[i] = size[i];
         tempmatrix[i] = new int[size[i]];
         tempmatrix[i] = matrix[i];
     }
-    int a = 0, b = 0;
+
+    int a = 0, b = 0; // Inicjalizuje liczniki a i b dla dwóch wierszy wynikowych.
     int * templ1 = new int[tempsize[n]];
     int * templ2 = new int[tempsize[n]];
+
+    // Rozdziela elementy wiersza o indeksie n na dwa wiersze: większe i mniejsze/równe k.
     for(int i = 0; i < tempsize[n]; i++)
     {
         if(tempmatrix[n][i] > k){
@@ -204,20 +255,32 @@ void makeR()
             b++;
         }
     }
+
+    // Sprawdza, czy oba nowe wiersze zawierają co najmniej jedną liczbę.
     if(a != 0 && b != 0){
-        N++;
+        N++; // Zwiększa liczbę wierszy w macierzy.
+
+        // Realokuje pamięć dla rozmiaru i macierzy.
         size = new int[N];
         matrix = new int*[N];
+
+        // Kopiuje wcześniejsze wiersze (do wiersza n) do nowej macierzy.
         for(int i = 0; i < n; i++){
             size[i] = tempsize[i];
             matrix[i] = tempmatrix[i];
         }
+
+        // Tworzy dwa nowe wiersze dla wynikowych danych.
         matrix[n] = new int[a];
         matrix[n + 1] = new int[b];
         size[n] = a;
         size[n + 1] = b;
+
+        // Kopiuje dane z templ1 i templ2 do nowych wierszy.
         matrix[n] = templ1;
         matrix[n + 1] = templ2;
+
+        // Kopiuje pozostałe wiersze z tempmatrix do nowej macierzy.
         for(int i = n + 2; i < N; i++)
         {
             matrix[i] = tempmatrix[i - 1];
@@ -225,6 +288,7 @@ void makeR()
         }
     }
 }
+
 
 int main() {
     scanf("%d", &N);
