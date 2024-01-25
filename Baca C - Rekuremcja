@@ -1,26 +1,43 @@
 //Viktoriia Volkova
+// Definiuje funkcję pomocniczą minHelp, która rekurencyjnie znajduje minimalny element w tablicy.
+// t - wskaźnik do tablicy liczb całkowitych
+// smallest - aktualnie najmniejszy element
+// N - liczba elementów w tablicy
+// minAddress - wskaźnik do aktualnie najmniejszego elementu
 const int* minHelp(const int* t, int smallest, int N, const int* minAddress) {
+    // Warunek zakończenia rekurencji: jeśli liczba elementów w tablicy jest 0, zwraca wskaźnik do najmniejszego elementu.
     if (N == 0) {
         return minAddress;
     }
 
+    // Sprawdza, czy aktualny element jest mniejszy niż dotychczasowy najmniejszy.
     if (*t < smallest) {
+        // Jeśli tak, aktualizuje wartość najmniejszego elementu i jego adres.
         smallest = *t;
         minAddress = t;
     }
+
+    // Rekurencyjnie wywołuje funkcję dla kolejnego elementu tablicy.
     return minHelp(t + 1, smallest, N - 1, minAddress);
 }
 
+// Funkcja minimum, która znajduje wskaźnik do najmniejszego elementu w tablicy.
+// N - liczba elementów w tablicy
+// t - wskaźnik do tablicy liczb całkowitych
 const int* minimum(int N, const int* t) {
+    // Sprawdza warunki błędu: jeśli liczba elementów jest niedodatnia lub wskaźnik do tablicy jest nullptr, zwraca nullptr.
     if (N <= 0 || t == nullptr) {
         return nullptr;
     }
 
+    // Inicjalizuje zmienne lokalne: smallest (aktualnie najmniejszy element) i minAddress (wskaźnik do aktualnie najmniejszego elementu).
     int smallest = *t;
     const int* minAddress = t;
 
+    // Wywołuje funkcję pomocniczą minHelp, rozpoczynając od drugiego elementu tablicy (t + 1).
     return minHelp(t + 1, smallest, N - 1, minAddress);
 }
+
 
 int iloczynSkalarny(const int* b1, const int* e1, const int* b2, const int* e2){
     int len1 = e1 - b1;
