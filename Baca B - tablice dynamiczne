@@ -163,6 +163,14 @@ void makeP()
     // Wypełnia drugą połowę wiersza odwróconymi wartościami z pierwszej połowy.
     for(int i = m / 2; i < m; i++) {
         matrix[n][i] = matrix[n][m / 2 - 1 - (i - m / 2 )];
+*/m / 2: Daje indeks połowy nowego rozmiaru wiersza.
+
+- 1: Odejmuje jeden, aby uzyskać indeks przed połową.
+
+(i - m / 2): Różnica między zmienną iteracyjną i a indeksem połowy. Ta część kontroluje iterację po pierwszej połowie wiersza.
+
+- (i - m / 2): Odejmuje tę różnicę, co działa jak lustrzane odbicie indeksów od połowy do końca. Dzięki temu uzyskuje się odwrócone indeksy dla drugiej połowy.
+/*
     }
 }
 
