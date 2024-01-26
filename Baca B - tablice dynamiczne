@@ -8,21 +8,35 @@ int** matrix = NULL; // Deklaruje wskaźnik do wskaźnika na liczbę całkowitą
 int* size = NULL; //Deklaruje wskaźnik na liczbę całkowitą, który prawdopodobnie będzie używany do przechowywania informacji o liczbie elementów w każdym z wierszy tablicy. Inicjalizuje go wartością NULL.
 
 int* myrealloc(int size, int* array, int new_size){
+    // Sprawdza, czy nowy rozmiar jest równy 0.
     if(new_size == 0){
-        delete array;   // Usuwa pamięć dynamicznie alokowaną dla tablicy wskazywanej przez array.
-        return NULL;
+        delete array;   // Jeśli tak, zwalnia pamięć dynamicznie alokowaną dla tablicy wskazywanej przez array.
+        return NULL;    // Zwraca NULL, co może sygnalizować, że tablica została zwolniona.
     }
+
+    // Alokuje dynamicznie nową tablicę o rozmiarze new_size.
     int* new_array = new int[new_size];
+
+    // Inicjalizuje min_size jako aktualny rozmiar.
     int min_size = size;
+
+    // Sprawdza, czy aktualny rozmiar jest większy niż nowy rozmiar.
     if(min_size > new_size){
-        min_size = new_size;
+        min_size = new_size;  // Jeśli tak, ustawia min_size na nowy rozmiar.
     }
+
+    // Kopiuje elementy z istniejącej tablicy do nowej tablicy do min_size.
     for(int i = 0; i < min_size; i++){
         new_array[i] = array[i];
     }
+
+    // Zwalnia pamięć dynamicznie alokowaną dla starej tablicy.
     delete array;
-    return new_array; // Funkcja zwraca wskaźnik do nowej tablicy liczb całkowitych.
+
+    // Zwraca wskaźnik do nowej tablicy liczb całkowitych.
+    return new_array;
 }
+
 
 int** myrealloc(int size, int** array, int new_size){ //która jest analogiczna do poprzedniej, ale tym razem przyjmuje wskaźnik do wskaźnika na liczbę całkowitą (int**) jako drugi argument. Funkcja zwraca wskaźnik do nowej tablicy wskaźników na liczby całkowite.
     if(new_size == 0){
